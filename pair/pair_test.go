@@ -10,19 +10,19 @@ func TestNew(t *testing.T) {
 	left := 1
 	right := "a"
 	pair := New(left, right)
-	assert.Equal(t, pair, Pair[int, string]{Left: left, Right: right})
+	assert.Equal(t, Pair[int, string]{Left: left, Right: right}, pair)
 }
 
 func TestLeft(t *testing.T) {
 	left := 1
 	right := "a"
 	pair := New(left, right)
-	assert.Equal(t, Left(pair), pair.Left)
+	assert.Equal(t, pair.Left, Left(pair))
 }
 
 func TestRight(t *testing.T) {
 	left := 1
 	right := "a"
 	pair := New(left, right)
-	assert.Equal(t, Right(pair), pair.Right)
+	assert.Equal(t, pair.Right, Right(pair))
 }
