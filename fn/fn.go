@@ -57,3 +57,9 @@ func Bind[A, B, C any](g func(B) func(A) C, f func(A) B) func(a A) C {
 func Compose[A, B, C any](g func(B) C, f func(A) B) func(A) C {
 	return Fmap(g, f)
 }
+
+func Const[A, B any](a A) func(b B) A {
+	return func(_ B) A {
+		return a
+	}
+}

@@ -95,3 +95,7 @@ func TestCompose(t *testing.T) {
 	x := 10
 	assert.Equal(t, g(f(x)), fmapped(x))
 }
+
+func TestConst(t *testing.T) {
+	assert.Equal(t, 1, Const[int, int](1)(2))
+}
