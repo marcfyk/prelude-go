@@ -1,9 +1,6 @@
 package maybe
 
-import (
-	"fmt"
-	"prelude/fn"
-)
+import "prelude/fn"
 
 type Maybe[A any] struct {
 	value *A
@@ -29,9 +26,17 @@ func IsNothing[A any](maybe Maybe[A]) bool {
 	return maybe.value == nil
 }
 
+func Match[A, B any](justFn func(A) B, nothingFn func() B, maybe Maybe[A]) B {
+	if IsJust(maybe) {
+		return justFn(*maybe.value)
+	} else {
+		return nothingFn()
+	}
+}
+
 func Unwrap[A any](maybe Maybe[A]) A {
 	if maybe.value == nil {
-		panic(fmt.Sprintf("attempting to unwrap value from %T", maybe))
+		panic(errInvalidUnwrap[A]{value: maybe})
 	}
 	return *maybe.value
 }
@@ -44,14 +49,6 @@ func UnwrapOr[A any](maybe Maybe[A], fallback A) A {
 	)
 }
 
-func Match[A, B any](justFn func(A) B, nothingFn func() B, maybe Maybe[A]) B {
-	if IsJust(maybe) {
-		return justFn(*maybe.value)
-	} else {
-		return nothingFn()
-	}
-}
-
 func Fmap[A, B any](f func(A) B, maybe Maybe[A]) Maybe[B] {
 	return Match(
 		fn.Fmap(Just[B], f),
@@ -62,13 +59,7 @@ func Fmap[A, B any](f func(A) B, maybe Maybe[A]) Maybe[B] {
 
 func Apply[A, B any](f Maybe[func(A) B], maybe Maybe[A]) Maybe[B] {
 	return Match(
-		func(g func(A) B) Maybe[B] {
-			return Match(
-				func(value A) Maybe[B] { return Just(g(value)) },
-				Nothing[B],
-				maybe,
-			)
-		},
+		fn.Flip(fn.Curry(Fmap[A, B]))(maybe),
 		Nothing[B],
 		f,
 	)
