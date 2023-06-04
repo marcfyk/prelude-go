@@ -47,6 +47,16 @@ func TestMatch(t *testing.T) {
 	x := 1
 	assert.Equal(t, f(x), Match(f, g, Left[int, int](x)))
 	assert.Equal(t, g(x), Match(f, g, Right[int](x)))
+
+	invalidEither := Either[int, int]{
+		left:  maybe.Just(1),
+		right: maybe.Just(1),
+	}
+	assert.PanicsWithError(
+		t,
+		errInvalidEither[int, int]{value: invalidEither}.Error(),
+		func() { Match(f, g, invalidEither) },
+	)
 }
 
 func TestUnwrapLeft(t *testing.T) {
